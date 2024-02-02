@@ -1,0 +1,140 @@
+{% load static %}
+{% include "header.html" %}
+
+
+    <!-- Start Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg-5">
+                    <div class="intro-excerpt">
+                        <h1>Contact Us</h1>
+                        <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit.</p>
+                       
+                    </div>
+                </div>
+                <div class="col-lg-7">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Hero Section -->
+
+<!-- Start Contact Form -->
+<div class="untree_co-section">
+    <div class="container">
+        <div class="block">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h2 class="text-center mb-4">Contact Us</h2>
+                            <form method="post" class="contact-form" id="contactForm">
+                                {% csrf_token %}
+
+                                <div class="mb-3">
+                                    <label for="id_first_name" class="form-label">First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="id_last_name" class="form-label">Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    {{ form.email }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="id_message" class="form-label">Message</label>
+                                    {{ form.message }}
+                                </div>
+
+                                <div class="form-group mb-3 text-center">
+                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Contact Form -->
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#contactForm").validate({
+            rules: {
+                first_name: {
+                    required: true,
+                    minlength: 3,
+                },
+                last_name: {
+                    required: true,
+                    minlength: 3,
+                },
+                email: {
+                    required: true,
+                    email: true,
+                },
+                message: {
+                    required: true,
+                    minlength: 10,
+                    maxlength: 255,
+                },
+            },
+            messages: {
+                first_name: {
+                    required: "Please enter your first name",
+                    minlength: "Name should be at least 3 characters",
+                },
+                last_name: {
+                    required: "Please enter your last name",
+                    minlength: "Name should be at least 3 characters",
+                },
+                email: {
+                    required: "Please enter your email address",
+                    email: "Please enter a valid email address",
+                },
+                message: {
+                    required: "Please enter your message",
+                    minlength: "Message should be at least 10 characters",
+                    maxlength: "max 255 characters",
+                },
+            },
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                error.addClass("invalid-feedback");
+                element.closest(".mb-3").append(error);
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-valid").removeClass("is-invalid");
+            },
+        });
+    });
+</script>
+{% include 'footer.html' %}
+
+
+
+
+    <!-- End Footer Section -->
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/tiny-slider.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+</body>
+
+</html>
