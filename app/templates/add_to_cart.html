@@ -9,16 +9,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/add_to_cart_style.css' %}">
 </head>
-<body style="text-align: center;">
+<body>
 
   <h1>Your Shopping Cart</h1>
 
   {% if cart_items %}
     <!-- Loop through items in the cart -->
-    <div style="display: flex; flex-direction: column; align-items: center;">
+    <div class="cart-container">
       {% for item in cart_items %}
-        <div style="border: 1px solid #ccc; margin: 10px; padding: 10px; text-align: left; width: 200px;">
+        <div class="cart-item">
           <h3>{{ item.product.name }}</h3>
           <p>Price: ${{ item.product.price }}</p>
           <p>Quantity: {{ item.quantity }}</p>
@@ -34,6 +35,13 @@
           {% else %}
             <p>No additional details available.</p>
           {% endif %}
+
+          <!-- Button to remove item from cart -->
+          <form action="{% url 'remove_from_cart' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+            <button type="submit">Remove from Cart</button>
+          </form>
         </div>
       {% endfor %}
     </div>

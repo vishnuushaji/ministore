@@ -42,7 +42,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .tokens import account_activation_token
 from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
-from .models import Product, Smartphone, Smartwatch, BlogPost
+from .models import Product, Smartphone, Smartwatch, BlogPost,Testimonial, CartItem
 
 
 class IndexView(TemplateView):
@@ -56,12 +56,15 @@ class IndexView(TemplateView):
         context['latest_posts'] = latest_posts
 
         # Fetch the latest smartwatches from the database
-        latest_smartwatches = Smartwatch.objects.order_by('-id')[:5]  # Adjust the number as needed
+        latest_smartwatches = Smartwatch.objects.order_by('-id')[:5]  
         context['latest_smartwatches'] = latest_smartwatches
 
         # Fetch the latest smartphones from the database
-        latest_smartphones = Smartphone.objects.order_by('-id')[:5]  # Adjust the number as needed
+        latest_smartphones = Smartphone.objects.order_by('-id')[:5] 
         context['latest_smartphones'] = latest_smartphones
+
+        testimonials = Testimonial.objects.all()[:2]  
+        context['testimonials'] = testimonials
 
         return context
     
@@ -80,7 +83,8 @@ class ProductListView(ListView):
     def get_queryset(self):
         smartphones = Smartphone.objects.all()
         smartwatches = Smartwatch.objects.all()
-        return list(smartphones) + list(smartwatches)
+        return {'smartphones': smartphones, 'smartwatches': smartwatches}
+
 
 class AddToCartView(View):
     template_name = 'add_to_cart.html'
@@ -110,14 +114,16 @@ class AddToCartView(View):
         return render(self.request, self.template_name, {'cart_items': cart_items})
 
 
-class RemoveFromCartView(FormView):
-    form_class = RemoveFromCartForm
-    template_name = 'remove_from_cart.html'
+class RemoveFromCartView(View):
+    def post(self, request, *args, **kwargs):
+        # Your logic to remove item from the cart goes here
+        # ...
 
-    def form_valid(self, form):
-        product_id = form.cleaned_data['product_id']       
-        return redirect('add_to_cart')
+        # Assuming you have successfully removed the item from the cart
+        messages.success(request, 'Item removed from the cart.')
         
+        # Redirect to the addtocart.html template
+        return redirect('add_to_cart')  # Replace 'add_to_cart' with the actual URL name or path
 
 
 class SignupView(CreateView):

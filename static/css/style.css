@@ -1,28 +1,4 @@
-/*
-Theme Name: Ministore
-Theme URI: 
-Author: 
-Author URI: 
-Description: Ministore is specially designed product packaged for Ministore by Moksha.
-Version: 
-*/
 
-/*--------------------------------------------------------------
-This is main CSS file that contains custom style rules used in this template
---------------------------------------------------------------*/
-
-/*------------------------------------*\
-    Table of contents
-\*------------------------------------*/
-
-/*------------------------------------------------
-
-CSS STRUCTURE:
-
-    
-/*--------------------------------------------------------------
-/** 1. VARIABLES
---------------------------------------------------------------*/
 :root {
   --accent-color:             #717171;
   --white-color:              #fff;
@@ -1018,4 +994,113 @@ figure.instagram-item img.insta-image {
 .post-navigation:hover svg,
 .post-navigation:focus svg {
     fill: var(--primary-color);
+}
+
+
+
+
+/* for shop.html */
+
+.product-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  margin-top: 50px;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 120px; /* Adjust the margin-top value here */
+}
+
+.product-card {
+  width: 300px;
+  margin: 15px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.product-card h3 {
+  color: #333;
+}
+
+.product-card p {
+  color: #777;
+  margin: 10px 0;
+}
+
+.product-card button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#smartphones h2,
+#smartwatches h2 {
+  text-align: center;
+  margin-top: 80px; /* Adjust the margin-top value as needed */
+}
+
+/* add_to_cart_style.css */
+
+
+/* add_to_cart_style.css */
+
+
+/* add_to_cart_style.css */
+
+/* add_to_cart_style.css */
+
+body {
+  text-align: center;
+}
+
+.content-container {
+  margin-top: 80px; /* Adjust the margin-top value as needed */
+}
+
+
+
+.cart-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 200px;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 320px;
+}
+
+.cart-item {
+  border: 1px solid #ccc;
+  margin: 10px;
+  padding: 10px;
+  text-align: left;
+  width: 200px;
+}
+
+.cart-item h3 {
+  color: #333;
+  margin-bottom: 10px; /* Add margin-bottom to create space between heading and other content */
+}
+
+.cart-item p {
+  color: #777;
+  margin: 10px 0;
+}
+
+.cart-item button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
