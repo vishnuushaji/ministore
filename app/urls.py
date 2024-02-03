@@ -2,9 +2,10 @@ from django.urls import path
 
 from .views import (
     IndexView,
-    ProductListView,
+    ShopView,
+    CartView,
     AddToCartView,
-    RemoveFromCartView,
+    RemoveFromCartView,CheckoutView,
     SignupView,
     LoginView,
     LogoutView,
@@ -13,14 +14,21 @@ from .views import (
     PasswordResetDoneView,
     PasswordResetConfirmView,
     PasswordResetCompleteView,
-    ActivateAccountView,ContactView,BlogView
+    ActivateAccountView,ContactView,BlogView,ThankYouView
 )
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
-    path('shop/', ProductListView.as_view(), name='shop'),
-    path('add_to_cart/', AddToCartView.as_view(), name='add_to_cart'),
-    path('remove_from_cart/', RemoveFromCartView.as_view(), name='remove_from_cart'),
+    path('shop/', ShopView.as_view(), name='shop'),
+    path('cart/', CartView.as_view(), name='cart'),
+  #  path('<slug:category_slug>/', ShopView.as_view(), name='product_list_by_category'),
+    path('add_to_cart/<int:product_id>/', AddToCartView.as_view(), name='add_to_cart'),
+    path('remove_from_cart/<int:cart_item_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
+    path('thankyou/', ThankYouView.as_view(), name='thankyou'),
+
+
+    
     path('contact/', ContactView.as_view(), name='contact'),
     path('blog/', BlogView.as_view(), name='blog'), 
 
@@ -36,5 +44,4 @@ urlpatterns = [
     path('reset/done/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('activate/<str:uidb64>/<str:token>/', ActivateAccountView.as_view(), name='activate'),
 ]
-
 

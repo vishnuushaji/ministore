@@ -1,0 +1,27 @@
+<!-- templates/store/thankyou.html -->
+
+{% load static %}
+{% include "header.html" %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <!-- Add your additional CSS links here -->
+</head>
+
+{% block title %}Thank You{% endblock %}
+
+{% block content %}
+  <h1>Thank You!</h1>
+  <p>Your order has been confirmed. We appreciate your business.</p>
+  <!-- Add additional content or order details as needed -->
+
+  <a href="{% url 'shop' %}">Continue Shopping</a>
+  <a href="{% url 'cart' %}">View Cart</a>
+{% endblock %}
+
+{% include "footer.html" %}

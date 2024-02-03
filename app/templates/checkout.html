@@ -1,0 +1,67 @@
+<!-- templates/store/checkout.html -->
+
+{% load static %}
+{% include "header.html" %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Shop</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <!-- Add your additional CSS links here -->
+</head>
+
+
+ <!-- Add this to your HTML -->
+
+
+
+ {% block title %}Checkout{% endblock %}
+
+{% block content %}
+  <h1>Checkout</h1>
+
+  {% if cart_items %}
+    <!-- Display product names -->
+    
+
+    <!-- Your existing table and checkout form logic -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>${{ item.product.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>Total Price: ${{ total_price }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+   
+
+    {% if user.is_authenticated %}
+      <a href="{% url 'thankyou' %}" class="btn btn-primary">Confirm Booking</a>
+    {% else %}
+      <p>Please <a href="{% url 'login' %}">log in</a> to confirm your booking.</p>
+    {% endif %}
+  {% else %}
+    <p>Your cart is empty.</p>
+  {% endif %}
+
+  <a href="{% url 'shop' %}">Home</a>
+  <a href="{% url 'cart' %}">Cart</a>
+{% endblock %}
+
+{% include "footer.html" %}

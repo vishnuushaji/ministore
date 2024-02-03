@@ -112,96 +112,90 @@
     </section>
 
 
-   <section id="mobile-products" class="product-store position-relative padding-large no-padding-top">
+    
+      <section id="smart-watches" class="product-store padding-large position-relative">
       <div class="container">
-         <div class="row">
-            <div class="display-header d-flex justify-content-between pb-3">
-               <h2 class="display-7 text-dark text-uppercase">Mobile Products</h2>
-               <div class="btn-right">
-                <a href="{% url 'shop' %}" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
-               </div>
-            </div>
-            <div class="swiper product-swiper">
-               <div class="swiper-wrapper">
-                  {% for smartphone in latest_smartphones %}
-                  <div class="swiper-slide">
-                     <div class="product-card position-relative">
-                        <div class="image-holder">
-                           <img src="{% static 'images/default_smartphone_image.jpg' %}" alt="{{ smartphone.name }}" class="img-fluid">
-                        </div>
-                        <div class="cart-concern position-absolute">
-                           <div class="cart-button d-flex">
-                              <!-- <a href="#" class="btn btn-medium btn-black">Add to Cart<svg class="cart-outline"><use xlink:href="#cart-outline"></use></svg></a> -->
-                           </div>
-                        </div>
-                        <div class="card-detail d-flex justify-content-between align-items-baseline pt-3">
-                           <!-- Use JavaScript to make the smartphone name clickable -->
-                           <h3 class="card-title text-uppercase" onclick="addToCartAndRedirect('{{ smartphone.name }}')">
-                              <a href="#">{{ smartphone.name }}</a>
-                              <form action="{% url 'add_to_cart' %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit">Add to Cart</button>
-                              </form>
-                           </h3>
-                           <span class="item-price text-primary">${{ smartphone.price }}</span>
-                        </div>
-                     </div>
+          <div class="row">
+              <div class="display-header d-flex justify-content-between pb-3">
+                  <h2 class="display-7 text-dark text-uppercase">Smart Watches</h2>
+                  <div class="btn-right">
+                      <a href="{% url 'shop' %}" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
                   </div>
-                  {% endfor %}
-               </div>
-            </div>
-         </div>
+              </div>
+              <div class="swiper product-swiper">
+                  <div class="swiper-wrapper">
+                      {% for product in category_two_products %}
+                      <div class="swiper-slide">
+                          <div class="product-card position-relative">
+                              <div class="image-holder">
+                                  <!-- Replace 'default_image' with the actual attribute name for the image -->
+                                  <img src="{% static 'images/default_image.jpg' %}" alt="{{ product.name }}" class="img-fluid">
+                              </div>
+                              <div class="cart-concern position-absolute">
+                                  <div class="cart-button d-flex">
+                                      <!-- <a href="#" class="btn btn-medium btn-black">Add to Cart<svg class="cart-outline"><use xlink:href="#cart-outline"></use></svg></a> -->
+                                  </div>
+                              </div>
+                              <div class="card-detail d-flex justify-content-between align-items-baseline pt-3">
+                                  <h3 class="card-title text-uppercase" onclick="addToCartAndRedirect('{{ product.name }}')">
+                                      <a href="#">{{ product.name }}</a>
+                                      <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+                                  </h3>
+                                  <span class="item-price text-primary">${{ product.price }}</span>
+                              </div>
+                          </div>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+          </div>
       </div>
       <div class="swiper-pagination position-absolute text-center"></div>
-   </section>
-   
-   <!-- Add this part to your index.html template -->
-  <section id="smart-watches" class="product-store padding-large position-relative">
-  <div class="container">
-     <div class="row">
-        <div class="display-header d-flex justify-content-between pb-3">
-           <h2 class="display-7 text-dark text-uppercase">Smart Watches</h2>
-           <div class="btn-right">
-              <a href="{% url 'shop' %}" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
-           </div>
-        </div>
-        <div class="swiper product-watch-swiper">
-           <div class="swiper-wrapper">
-              {% for smartwatch in latest_smartwatches %}
-              <div class="swiper-slide">
-                 <div class="product-card position-relative">
-                    <div class="image-holder">
-                       <!-- Use smartwatch image field here if available -->
-                       <img src="{% static 'images/default_watch_image.jpg' %}" alt="{{ smartwatch.name }}" class="img-fluid">
-                    </div>
-                    <div class="cart-concern position-absolute">
-                       <div class="cart-button d-flex">
-                      <!-- <a href="#" class="btn btn-medium btn-black">Add to Cart<svg class="cart-outline"><use xlink:href="#cart-outline"></use></svg></a> -->
-                      </div>
-                    </div>
-                    <div class="card-detail d-flex justify-content-between align-items-baseline pt-3">
-                       <h3 class="card-title text-uppercase">
-                        <a href="{% url 'add_to_cart' %}">{{ smartwatch.name }}</a>
-
-                        <form action="{% url 'add_to_cart' %}" method="post">
-                          {% csrf_token %}
-                          <input type="hidden" name="product_id" value="{{ product.id }}">
-                          <button type="submit">Add to Cart</button>
-                        </form>
-                        
-                       </h3>
-                       <span class="item-price text-primary">${{ smartwatch.price }}</span>
-                    </div>
-                 </div>
-              </div>
-              {% endfor %}
-           </div>
-        </div>
-     </div>
-  </div>
-  <div class="swiper-pagination position-absolute text-center"></div>
   </section>
+  
+   
+ <section id="category-one-products" class="product-store position-relative padding-large no-padding-top">
+  <div class="container">
+    <div class="row">
+        <div class="display-header d-flex justify-content-between pb-3">
+            <h2 class="display-7 text-dark text-uppercase">Smart phones</h2>
+            <div class="btn-right">
+                <a href="{% url 'shop' %}" class="btn btn-medium btn-normal text-uppercase">Go to Shop</a>
+            </div>
+        </div>
+        <div class="swiper product-swiper">
+            <div class="swiper-wrapper">
+                {% for product in category_one_products %}
+                <div class="swiper-slide">
+                    <div class="product-card position-relative">
+                        <div class="image-holder">
+                            <!-- Replace 'default_image' with the actual attribute name for the image -->
+                            <img src="{% static 'images/default_image.jpg' %}" alt="{{ product.name }}" class="img-fluid">
+                        </div>
+                        <div class="cart-concern position-absolute">
+                            <div class="cart-button d-flex">
+                                <!-- <a href="#" class="btn btn-medium btn-black">Add to Cart<svg class="cart-outline"><use xlink:href="#cart-outline"></use></svg></a> -->
+                            </div>
+                        </div>
+                        <div class="card-detail d-flex justify-content-between align-items-baseline pt-3">
+                            <h3 class="card-title text-uppercase" onclick="addToCartAndRedirect('{{ product.name }}')">
+                                <a href="#">{{ product.name }}</a>
+                               
+                                  <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+                                    
+                            </h3>
+                            <span class="item-price text-primary">${{ product.price }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="swiper-pagination position-absolute text-center"></div>
+</section>
+
 
     <!-- index.html -->
 

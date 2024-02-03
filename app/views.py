@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, CreateView
 from django.views import View
 from .tokens import AccountActivationTokenGenerator, account_activation_token
-from .models import Product, Smartphone, Smartwatch,BlogPost
+from .models import Product,BlogPost
 from django.views.generic.edit import FormView
-from .forms import RemoveFromCartForm, UserRegistrationForm, CustomAuthenticationForm
+from .forms import AddToCartForm, RemoveFromCartForm, UserRegistrationForm, CustomAuthenticationForm
 from django.urls import reverse_lazy
 from django.contrib.auth.views import (
     LoginView as AuthLoginView,
@@ -17,13 +17,11 @@ from django.contrib.auth.views import (
 )
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.http import HttpResponse
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator,PasswordResetTokenGenerator
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, CreateView, View
@@ -33,16 +31,13 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .tokens import account_activation_token
 from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
-from .models import Product, Smartphone, Smartwatch, BlogPost,Testimonial, CartItem
+from .models import Product,  BlogPost,Testimonial, CartItem,Category,CartItem, Order, OrderItem
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 
 
 class IndexView(TemplateView):
@@ -55,76 +50,155 @@ class IndexView(TemplateView):
         latest_posts = BlogPost.objects.order_by('-date_published')[:3]
         context['latest_posts'] = latest_posts
 
-        # Fetch the latest smartwatches from the database
-        latest_smartwatches = Smartwatch.objects.order_by('-id')[:5]  
-        context['latest_smartwatches'] = latest_smartwatches
-
-        # Fetch the latest smartphones from the database
-        latest_smartphones = Smartphone.objects.order_by('-id')[:5] 
-        context['latest_smartphones'] = latest_smartphones
-
-        testimonials = Testimonial.objects.all()[:2]  
+        testimonials = Testimonial.objects.all()[:2]
         context['testimonials'] = testimonials
 
+        
+        category_one = Category.objects.get(id=1)
+        category_one_products = Product.objects.filter(category=category_one)[:3]
+        context['category_one_products'] = category_one_products
+
+        # Fetch any 3 products of category object(2)
+        category_two = Category.objects.get(id=2)
+        category_two_products = Product.objects.filter(category=category_two)[:3]
+        context['category_two_products'] = category_two_products
+
         return context
-    
-    
-class BlogView(ListView):
-    template_name = 'blog.html'  # Update with your actual template name
-    context_object_name = 'latest_posts'
-    model = BlogPost
-    ordering = ['-date_published']  # Order posts by date_published, modify as needed
-    paginate_by = 3
 
-class ProductListView(ListView):
+    
+
+
+class ShopView(TemplateView):
+
     template_name = 'shop.html'
-    context_object_name = 'products'  
 
-    def get_queryset(self):
-        smartphones = Smartphone.objects.all()
-        smartwatches = Smartwatch.objects.all()
-        return {'smartphones': smartphones, 'smartwatches': smartwatches}
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = Product.objects.all()
+        return context  
 
 
-class AddToCartView(View):
+
+class CartView(TemplateView):
+    template_name = 'cart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart_items = CartItem.objects.all()
+
+        for item in cart_items:
+            # Calculate the total price for each item
+            item.total_price = item.product.price * item.quantity
+
+        context['cart_items'] = cart_items
+        return context
+class AddToCartView(LoginRequiredMixin, View):
     template_name = 'add_to_cart.html'
+    login_url = 'login'  # Specify your login URL
 
-    def post(self, request, *args, **kwargs):
-        product_id = self.request.POST.get('product_id')
-        print(f"Product ID: {product_id}")
+    def get(self, request, product_id):
+        product = get_object_or_404(Product, pk=product_id)
+        form = AddToCartForm()
+        return render(request, self.template_name, {'product': product, 'form': form})
 
-        cart_items = self.request.session.get('cart_items', [])
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, pk=product_id)
+        form = AddToCartForm(request.POST)
 
-        product_in_cart = next((item for item in cart_items if item['product_id'] == product_id), None)
+        if form.is_valid():
+            quantity = form.cleaned_data['quantity']
 
-        if product_in_cart:
-            product_in_cart['quantity'] += 1
-        else:
-            cart_items.append({'product_id': product_id, 'quantity': 1})
+            # Check if the product is already in the user's cart
+            cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+            
+            # If the item is already in the cart, update the quantity
+            if not created:
+                cart_item.quantity += quantity
+                cart_item.save()
+            else:
+                cart_item.quantity = quantity
+                cart_item.save()
 
-        self.request.session['cart_items'] = cart_items
+            return redirect('cart')
 
-        # Pass the cart_items to the template
-        return render(self.request, self.template_name, {'cart_items': cart_items})
-    
-    def get(self, request, *args, **kwargs):
-        # Get the existing cart_items or an empty list
-        cart_items = self.request.session.get('cart_items', [])
-        # Pass the cart_items to the template
-        return render(self.request, self.template_name, {'cart_items': cart_items})
+        return render(request, self.template_name, {'product': product, 'form': form})
 
 
 class RemoveFromCartView(View):
+    def get(self, request, cart_item_id):
+        cart_item = get_object_or_404(CartItem, pk=cart_item_id)
+
+        if cart_item.quantity > 1:
+            # If the quantity is greater than 1, decrement the quantity
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            # If the quantity is 1, remove the entire CartItem
+            cart_item.delete()
+
+        return redirect('cart')
+
+
+
+class CheckoutView(LoginRequiredMixin, TemplateView):
+    template_name = 'checkout.html'
+    login_url = reverse_lazy('login') 
+
+    def get_context_data(self, **kwargs):
+        # Retrieve all cart items
+        cart_items = CartItem.objects.all()
+
+        # Calculate total quantity and total price
+        total_quantity = sum(item.quantity for item in cart_items)
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+
+       
+        product_names = [item.product.name for item in cart_items]
+
+        # Pass data to the checkout template
+        context = super().get_context_data(**kwargs)
+        context['cart_items'] = cart_items
+        context['total_quantity'] = total_quantity
+        context['total_price'] = total_price
+        context['product_names'] = product_names
+
+        return context
+
     def post(self, request, *args, **kwargs):
-        # Your logic to remove item from the cart goes here
-        # ...
+        # Additional logic for processing the checkout form
+        # For example, you might want to save the order in the database, process payments, etc.
 
-        # Assuming you have successfully removed the item from the cart
-        messages.success(request, 'Item removed from the cart.')
-        
-        # Redirect to the addtocart.html template
-        return redirect('add_to_cart')  # Replace 'add_to_cart' with the actual URL name or path
+        # Retrieve all cart items
+        cart_items = CartItem.objects.all()
 
+        # Calculate total quantity and total price
+        total_quantity = sum(item.quantity for item in cart_items)
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+
+        # Create a new order
+        order = Order.objects.create(
+            user=request.user,
+            total_quantity=total_quantity,
+            total_price=total_price
+        )
+
+        # Create OrderItem instances for each cart item
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                total_price=cart_item.product.price * cart_item.quantity
+            )
+
+        # Clear the cart after checkout (adjust this based on your actual cart implementation)
+        CartItem.objects.all().delete()
+
+        # Redirect to a success page or another relevant page after checkout
+        return redirect('thankyou')
+
+class ThankYouView(TemplateView):
+    template_name = 'thankyou.html'    
 
 class SignupView(CreateView):
     template_name = 'registration/signup.html'
@@ -230,3 +304,10 @@ class ContactView(TemplateView):
 
             return render(request, 'contact_success.html') 
         return self.render_to_response({'form': form})        
+    
+class BlogView(ListView):
+    template_name = 'blog.html' 
+    context_object_name = 'latest_posts'
+    model = BlogPost
+    ordering = ['-date_published']  
+    paginate_by = 3    
