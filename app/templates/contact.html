@@ -3,13 +3,13 @@
 
 
     <!-- Start Hero Section -->
-    <div class="hero">
-        <div class="container">
+    <div class="hero" style="margin-top: 60px; padding-bottom: 30px;">
+                <div class="container">
             <div class="row justify-content-between">
                 <div class="col-lg-5">
                     <div class="intro-excerpt">
                         <h1>Contact Us</h1>
-                        <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit.</p>
+                        <p class="mb-4"></p>
                        
                     </div>
                 </div>
@@ -22,8 +22,8 @@
     <!-- End Hero Section -->
 
 <!-- Start Contact Form -->
-<div class="untree_co-section">
-    <div class="container">
+<div class="untree_co-section" style="margin-bottom: 80px;">
+        <div class="container">
         <div class="block">
             <div class="row justify-content-center">
                 <div class="col-md-6">
@@ -129,7 +129,44 @@
 
 
 
+<style>
+    /* Additional CSS for Contact Page */
+    .hero {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+    }
 
+    .intro-excerpt {
+        max-width: 500px;
+    }
+
+    .contact-form {
+        margin-top: 30px;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+</style>
     <!-- End Footer Section -->
 
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>

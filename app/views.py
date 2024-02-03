@@ -74,7 +74,14 @@ class ShopView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['products'] = Product.objects.all()
+        category_one = Category.objects.get(id=1)
+        category_one_products = Product.objects.filter(category=category_one)[:3]
+        context['category_one_products'] = category_one_products
+
+        # Fetch any 3 products of category object(2)
+        category_two = Category.objects.get(id=2)
+        category_two_products = Product.objects.filter(category=category_two)[:3]
+        context['category_two_products'] = category_two_products
         return context  
 
 

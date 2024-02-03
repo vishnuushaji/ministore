@@ -9,55 +9,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/add_to_cart_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cart_style.css' %}">
     <!-- Add your additional CSS links here -->
+    
 </head>
 <body>
 
-  <h1>Your Shopping Cart</h1>
+  <div class="content-box">
+    <h1>Your Shopping Cart</h1>
 
-{% block title %}Shopping Cart{% endblock %}
+    {% block title %}Shopping Cart{% endblock %}
 
-{% block content %}
-  <h1>Your Shopping Cart</h1>
-
-  {% if cart_items %}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Total</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in cart_items %}
+    {% block content %}
+      {% if cart_items %}
+        <table class="table">
+          <thead>
             <tr>
-                <td>{{ item.product.name }}</td>
-                <td>${{ item.product.price }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>${{ item.total_price }}</td>
-                <td>
-                    <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger">Remove</a>
-                </td>
+              <th>Product Name</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th>Actions</th>
             </tr>
-        {% endfor %}
-    </tbody>
-    </table>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>${{ item.product.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.total_price }}</td>
+                    <td>
+                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger">Remove</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
 
-    <!-- Checkout Button -->
-    <a href="{% url 'checkout' %}" class="btn btn-primary">Checkout</a>
+        <!-- Checkout Button -->
+        <a href="{% url 'checkout' %}" class="btn btn-primary checkout-btn">Checkout</a>
 
-  {% else %}
-    <p>Your cart is empty.</p>
-  {% endif %}
+      {% else %}
+        <p>Your cart is empty.</p>
+      {% endif %}
+      
+      <div class="custom-links" style="margin-top: 20px;">
+        <a href="{% url 'shop' %}" class="home-link">
+          <i class="fas fa-home"></i> Go to Home
+        </a>
+      </div>
+    {% endblock %}
+  </div>
   
-  <a href="{% url 'shop' %}">Home</a>
-  <a href="{% url 'cart' %}">Cart</a>
-{% endblock %}
-
+  <!-- Add your additional HTML or styling here -->
 
 </body>
 </html>

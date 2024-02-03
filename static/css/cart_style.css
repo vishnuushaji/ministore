@@ -1,0 +1,27 @@
+
+        body {
+            margin: 20px; /* Add some margin to the body */
+            padding: 120px;
+        }
+
+        .content-box {
+            border: 1px solid #dee2e6; /* Add a border to create a rectangular box */
+            border-radius: 10px; /* Optional: Add border-radius for rounded corners */
+            padding: 20px; /* Add padding inside the box */
+            margin: 20px auto 100px; /* Center the box, adjust margin-bottom to move the footer down */
+            max-width: 600px; /* Set the maximum width of the box */
+            background-color: #ffffff; /* Optional: Set a background color for the box */
+        }
+
+        h1 {
+            margin-bottom: 20px; /* Adjust the bottom margin of the heading */
+        }
+
+        table {
+            margin-top: 20px; /* Add some margin to the top of the table */
+        }
+
+        .checkout-btn {
+            margin-top: 20px; /* Add margin to the top of the checkout button */
+        }
+   

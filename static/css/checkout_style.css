@@ -1,0 +1,30 @@
+body {
+    margin: 20px;
+    padding: 120px;
+}
+
+.content-box {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px auto 100px;
+    max-width: 600px;
+    background-color: #ffffff;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+table {
+    margin-top: 20px;
+}
+
+.confirm-btn {
+    margin-top: 20px;
+}
+
+.total-price {
+    margin-top: 10px;
+    font-weight: bold;
+}

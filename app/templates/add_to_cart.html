@@ -1,3 +1,5 @@
+<!-- templates/store/addtocart.html -->
+
 {% load static %}
 {% include "header.html" %}
 
@@ -7,35 +9,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/add_to_cart_style.css' %}">
-    <!-- Add your additional CSS links here -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/addtocart.css' %}">
 </head>
 <body>
 
-  <h1>Your Shopping Cart</h1>
-
-  {% block title %}Add to Cart{% endblock %}
-
-  {% block content %}
-    <h1>Add {{ product.name }} to Cart</h1>
-  
-    <div class="card mb-4 box-shadow">
-      <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
-      <div class="card-body">
-        <h3>{{ product.name }}</h3>
-        <p class="card-text">{{ product.description }}</p>
-        <p class="card-text">${{ product.price }}</p>
-        
-        <form method="post" action="{% url 'add_to_cart' product.id %}">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </form>
-        
-        <a href="{% url 'shop' %}">Back to Products</a>
+  <div class="content-box">
+    {% block content %}
+      <h1>Add {{ product.name }} to Cart</h1>
+    
+      <div class="card mb-4 box-shadow">
+        <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
+        <div class="card-body">
+          <h3>{{ product.name }}</h3>
+          <p class="card-text">{{ product.description }}</p>
+          <p class="card-text">${{ product.price }}</p>
+          
+          <form method="post" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Add to Cart</button>
+          </form>
+          
+          <a href="{% url 'shop' %}">Back to Products</a>
+        </div>
       </div>
-    </div>
-  {% endblock %}
+    {% endblock %}
+  </div>
   
   <!-- Add your additional HTML or styling here -->
 

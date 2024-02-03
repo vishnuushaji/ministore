@@ -1,0 +1,65 @@
+/* Your existing styles */
+
+body {
+    margin: 0;
+    padding: 120px; /* Increase the padding to create more distance */
+    font-family: 'Arial', sans-serif;
+}
+
+.content-box {
+    border: 2px solid #383939;
+    border-radius: 10px;
+    padding: 30px;
+    margin: 20px auto 200px; /* Increase the margin-bottom for more space */
+    max-width: 400px;
+    background-color: #eee9e9;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin-bottom: 30px;
+    color: #5a5f62;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+img.card-img-top {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ddd;
+}
+
+p.card-text {
+    color: #333;
+}
+
+form {
+    margin-top: 20px;
+}
+
+button.btn-primary {
+    background-color: #444d53;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: #4b5054;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Add any other existing or new styles */
