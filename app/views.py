@@ -205,7 +205,19 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
         return redirect('thankyou')
 
 class ThankYouView(TemplateView):
-    template_name = 'thankyou.html'    
+    template_name = 'thankyou.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Replace the following lines with your actual logic to get cart items and calculate total price
+        cart_items = CartItem.objects.all()  # Replace with your actual query to get cart items
+        total_price = sum(item.product.price * item.quantity for item in cart_items)  # Replace with your actual logic to calculate total price
+
+        context['cart_items'] = cart_items
+        context['total_price'] = total_price
+    
+        return context
 
 class SignupView(CreateView):
     template_name = 'registration/signup.html'
