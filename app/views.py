@@ -46,7 +46,6 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Fetch the latest three blog posts from the database
         latest_posts = BlogPost.objects.order_by('-date_published')[:3]
         context['latest_posts'] = latest_posts
 
@@ -58,7 +57,6 @@ class IndexView(TemplateView):
         category_one_products = Product.objects.filter(category=category_one)[:3]
         context['category_one_products'] = category_one_products
 
-        # Fetch any 3 products of category object(2)
         category_two = Category.objects.get(id=2)
         category_two_products = Product.objects.filter(category=category_two)[:3]
         context['category_two_products'] = category_two_products
@@ -68,22 +66,44 @@ class IndexView(TemplateView):
     
 
 
-class ShopView(TemplateView):
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+class ShopView(TemplateView):
     template_name = 'shop.html'
+    products_per_page = 3  
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         category_one = Category.objects.get(id=1)
-        category_one_products = Product.objects.filter(category=category_one)[:3]
+        category_one_products = Product.objects.filter(category=category_one)
+        paginator_one = Paginator(category_one_products, self.products_per_page)
+        page_one = self.request.GET.get('page_one')
+
+        try:
+            category_one_products = paginator_one.page(page_one)
+        except PageNotAnInteger:
+            category_one_products = paginator_one.page(1)
+        except EmptyPage:
+            category_one_products = paginator_one.page(paginator_one.num_pages)
+
         context['category_one_products'] = category_one_products
 
-        # Fetch any 3 products of category object(2)
         category_two = Category.objects.get(id=2)
-        category_two_products = Product.objects.filter(category=category_two)[:3]
-        context['category_two_products'] = category_two_products
-        return context  
+        category_two_products = Product.objects.filter(category=category_two)
+        paginator_two = Paginator(category_two_products, self.products_per_page)
+        page_two = self.request.GET.get('page_two')
 
+        try:
+            category_two_products = paginator_two.page(page_two)
+        except PageNotAnInteger:
+            category_two_products = paginator_two.page(1)
+        except EmptyPage:
+            category_two_products = paginator_two.page(paginator_two.num_pages)
+
+        context['category_two_products'] = category_two_products
+
+        return context
 
 
 class CartView(TemplateView):
@@ -94,14 +114,13 @@ class CartView(TemplateView):
         cart_items = CartItem.objects.all()
 
         for item in cart_items:
-            # Calculate the total price for each item
             item.total_price = item.product.price * item.quantity
 
         context['cart_items'] = cart_items
         return context
 class AddToCartView(LoginRequiredMixin, View):
     template_name = 'add_to_cart.html'
-    login_url = 'login'  # Specify your login URL
+    login_url = 'login' 
 
     def get(self, request, product_id):
         product = get_object_or_404(Product, pk=product_id)
@@ -115,10 +134,8 @@ class AddToCartView(LoginRequiredMixin, View):
         if form.is_valid():
             quantity = form.cleaned_data['quantity']
 
-            # Check if the product is already in the user's cart
             cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
             
-            # If the item is already in the cart, update the quantity
             if not created:
                 cart_item.quantity += quantity
                 cart_item.save()
@@ -136,11 +153,9 @@ class RemoveFromCartView(View):
         cart_item = get_object_or_404(CartItem, pk=cart_item_id)
 
         if cart_item.quantity > 1:
-            # If the quantity is greater than 1, decrement the quantity
             cart_item.quantity -= 1
             cart_item.save()
         else:
-            # If the quantity is 1, remove the entire CartItem
             cart_item.delete()
 
         return redirect('cart')
@@ -149,20 +164,16 @@ class RemoveFromCartView(View):
 
 class CheckoutView(LoginRequiredMixin, TemplateView):
     template_name = 'checkout.html'
-    login_url = reverse_lazy('login') 
+    login_url = reverse_lazy('login')
 
     def get_context_data(self, **kwargs):
-        # Retrieve all cart items
         cart_items = CartItem.objects.all()
 
-        # Calculate total quantity and total price
         total_quantity = sum(item.quantity for item in cart_items)
         total_price = sum(item.product.price * item.quantity for item in cart_items)
 
-       
         product_names = [item.product.name for item in cart_items]
 
-        # Pass data to the checkout template
         context = super().get_context_data(**kwargs)
         context['cart_items'] = cart_items
         context['total_quantity'] = total_quantity
@@ -172,47 +183,45 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        # Additional logic for processing the checkout form
-        # For example, you might want to save the order in the database, process payments, etc.
+       
 
-        # Retrieve all cart items
-        cart_items = CartItem.objects.all()
+        try:
+            cart_items = CartItem.objects.all()
 
-        # Calculate total quantity and total price
-        total_quantity = sum(item.quantity for item in cart_items)
-        total_price = sum(item.product.price * item.quantity for item in cart_items)
+            total_quantity = sum(item.quantity for item in cart_items)
+            total_price = sum(item.product.price * item.quantity for item in cart_items)
 
-        # Create a new order
-        order = Order.objects.create(
-            user=request.user,
-            total_quantity=total_quantity,
-            total_price=total_price
-        )
-
-        # Create OrderItem instances for each cart item
-        for cart_item in cart_items:
-            OrderItem.objects.create(
-                order=order,
-                product=cart_item.product,
-                quantity=cart_item.quantity,
-                total_price=cart_item.product.price * cart_item.quantity
+            order = Order.objects.create(
+                user=request.user,
+                total_quantity=total_quantity,
+                total_price=total_price
             )
 
-        # Clear the cart after checkout (adjust this based on your actual cart implementation)
-        CartItem.objects.all().delete()
+            
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                    total_price=cart_item.product.price * cart_item.quantity
+                )
 
-        # Redirect to a success page or another relevant page after checkout
+           
+            CartItem.objects.all().delete()
+
+            messages.success(request, 'Order placed successfully. Thank you for your purchase!')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
         return redirect('thankyou')
-
 class ThankYouView(TemplateView):
     template_name = 'thankyou.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Replace the following lines with your actual logic to get cart items and calculate total price
-        cart_items = CartItem.objects.all()  # Replace with your actual query to get cart items
-        total_price = sum(item.product.price * item.quantity for item in cart_items)  # Replace with your actual logic to calculate total price
+        cart_items = CartItem.objects.all()  
+        total_price = sum(item.product.price * item.quantity for item in cart_items)  
 
         context['cart_items'] = cart_items
         context['total_price'] = total_price

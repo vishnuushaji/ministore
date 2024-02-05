@@ -31,48 +31,84 @@
 </head>
 <body>
 
-<div class="container">
-    <div class="category-container">
-        <h1 class="my-4">Mobile Phones</h1>
-
-        <div class="row">
-            {% for product in category_one_products %}
-                <div class="col-md-4">
-                    <div class="card product-card">
-                        <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">{{ product.description }}</p>
-                            <p class="card-text">${{ product.price }}</p>
-                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+    <div class="container">
+        <div class="category-container">
+            <h1 class="my-4">Mobile Phones</h1>
+    
+            <div class="row">
+                {% for product in category_one_products %}
+                    <div class="col-md-4">
+                        <div class="card product-card">
+                            <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.description }}</p>
+                                <p class="card-text">${{ product.price }}</p>
+                                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+    
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if category_one_products.has_previous %}
+                            <a href="?page_one=1">&laquo; first</a>
+                            <a href="?page_one={{ category_one_products.previous_page_number }}">previous</a>
+                        {% endif %}
+    
+                        <span class="current">
+                            Page {{ category_one_products.number }} of {{ category_one_products.paginator.num_pages }}.
+                        </span>
+    
+                        {% if category_one_products.has_next %}
+                            <a href="?page_one={{ category_one_products.next_page_number }}">next</a>
+                            <a href="?page_one={{ category_one_products.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
                 </div>
-            {% endfor %}
+            </div>
         </div>
-    </div>
-
-    <div class="category-container">
-        <h1 class="my-4">Smart Watches</h1>
-
-        <div class="row">
-            {% for product in category_two_products %}
-                <div class="col-md-4">
-                    <div class="card product-card">
-                        <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">{{ product.description }}</p>
-                            <p class="card-text">${{ product.price }}</p>
-                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+    
+        <div class="category-container">
+            <h1 class="my-4">Smart Watches</h1>
+    
+            <div class="row">
+                {% for product in category_two_products %}
+                    <div class="col-md-4">
+                        <div class="card product-card">
+                            <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.description }}</p>
+                                <p class="card-text">${{ product.price }}</p>
+                                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+    
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if category_two_products.has_previous %}
+                            <a href="?page_two=1">&laquo; first</a>
+                            <a href="?page_two={{ category_two_products.previous_page_number }}">previous</a>
+                        {% endif %}
+    
+                        <span class="current">
+                            Page {{ category_two_products.number }} of {{ category_two_products.paginator.num_pages }}.
+                        </span>
+    
+                        {% if category_two_products.has_next %}
+                            <a href="?page_two={{ category_two_products.next_page_number }}">next</a>
+                            <a href="?page_two={{ category_two_products.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
                 </div>
-            {% endfor %}
+            </div>
         </div>
     </div>
-</div>
-
+    
 {% include "footer.html" %}
 
 <!-- Add Bootstrap JS and jQuery -->

@@ -108,7 +108,7 @@
                 message: {
                     required: "Please enter your message",
                     minlength: "Message should be at least 10 characters",
-                    maxlength: "max 255 characters",
+                    maxlength: "Message should be at most 255 characters",
                 },
             },
             errorElement: "div",
@@ -125,6 +125,7 @@
         });
     });
 </script>
+
 {% include 'footer.html' %}
 
 
