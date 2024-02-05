@@ -98,103 +98,95 @@
     
     <header id="header" class="site-header header-scrolled position-fixed text-black bg-light fixed-top">
       <nav id="header-nav" class="navbar navbar-expand-lg px-3 mb-3">
-        <div class="container-fluid">
-            <!-- Replace the href with Django URL template tag -->
-            <a class="navbar-brand" href="{% url 'index' %}">
-                <img src="{% static 'images/main-logo.png' %}" class="logo">
-            </a>
-          <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
-            <svg class="navbar-icon">
-              <use xlink:href="#navbar-icon"></use>
-            </svg>
-          </button>
-          <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
-            <div class="offcanvas-header px-4 pb-0">
-              <a class="navbar-brand" href="index.html">
-                <img src="{% static 'images/main-logo.png' %}" class="logo">
+          <div class="container-fluid">
+              <!-- Replace the href with Django URL template tag -->
+              <a class="navbar-brand" href="{% url 'index' %}">
+                  <img src="{% static 'images/main-logo.png' %}" class="logo">
               </a>
-              <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
-            </div>
-            <div class="offcanvas-body">
-              <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
-                <li class="nav-item">
-                  <a class="nav-link me-4 link-dark" href="{% url 'index' %}">Home</a>
-              </li>
-                <li class="nav-item">
-                  <a class="nav-link me-4  link-dark"  href="{% url 'shop' %}">Products</a>
-              </li>
-                <li class="nav-item">
-                  <a class="nav-link me-4 link-dark"  href="{% url 'contact' %}">Contact Us</a>
-              </li>
-              
-                <li class="nav-item dropdown">
-                  <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
-                  <ul class="dropdown-menu">
-                    
-                    <li>
-                      <a href="#latest-blog" class="dropdown-item">Blog</a>
-                    </li>                 
-                                                  
-                    <li>
-                      <a href="{% url "checkout" %}" class="dropdown-item">Checkout</a>
-                    </li>
-                    
-                    
-                  </ul>
-                </li>
-                <li class="nav-item">
-                  <div class="user-items ps-5">
-                    <ul class="d-flex justify-content-end list-unstyled">
-                      <li class="search-item pe-3">                       
-                          </svg>
-                        </a>
-                      </li>
-                      <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-                    {% if user.is_authenticated %}
-                      <!-- Show dropdown with logout and password change options for authenticated users -->
-                      <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <svg class="user">
-                          <use xlink:href="#user"></use>
-                      </svg>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-                          <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
-                        </div>
-                      </li>
-                    {% else %}
-                      <!-- Show login and signup links if the user is not authenticated -->
-                      <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <svg class="user">
-                              <use xlink:href="#user"></use>
-                          </svg>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item" href="{% url 'login' %}">Login</a>
-                          <a class="dropdown-item" href="{% url 'signup' %}">Signup</a>
-                        </div>
-                      </li>
-                    {% endif %}
-                      <li>
-                        <a href="{% url 'cart' %}">
-                            <svg class="cart">
-                                <use xlink:href="#cart"></use>
-                            </svg>
-                        </a>
-                    </li>
-                    
-                        </a>
-                      </li>
-                    </ul>
+              <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                  <svg class="navbar-icon">
+                      <use xlink:href="#navbar-icon"></use>
+                  </svg>
+              </button>
+              <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
+                  <div class="offcanvas-header px-4 pb-0">
+                      <a class="navbar-brand" href="index.html">
+                          <img src="{% static 'images/main-logo.png' %}" class="logo">
+                      </a>
+                      <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
                   </div>
-                </li>
-              </ul>
-            </div>
+                  <div class="offcanvas-body">
+                      <ul id="navbar" class="navbar-nav text-uppercase ms-auto mb-2 mb-md-0 pe-3">
+                          <li class="nav-item">
+                              <a class="nav-link me-4 link-dark" href="{% url 'index' %}">Home</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link me-4  link-dark" href="{% url 'shop' %}">Products</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link me-4 link-dark" href="{% url 'contact' %}">Contact Us</a>
+                          </li>
+  
+                          <li class="nav-item dropdown">
+                              <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages</a>
+                              <ul class="dropdown-menu">
+                                  <li>
+                                      <a href="#latest-blog" class="dropdown-item">Blog</a>
+                                  </li>
+                                  <li>
+                                      <a href="{% url "checkout" %}" class="dropdown-item">Checkout</a>
+                                  </li>
+                              </ul>
+                          </li>
+                          <li class="nav-item">
+                              <div class="user-items ps-5">
+                                  <ul class="custom-navbar-cta navbar-nav ">
+                                      {% if user.is_authenticated %}
+                                      <li class="nav-item dropdown">
+                                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                              <svg class="user">
+                                                  <use xlink:href="#user"></use>
+                                              </svg>
+                                          </a>
+                                          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                              <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                                              <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
+                                          </div>
+                                      </li>
+                                      {% else %}
+                                      <li class="nav-item dropdown">
+                                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                              <svg class="user">
+                                                  <use xlink:href="#user"></use>
+                                              </svg>
+                                          </a>
+                                          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                              <a class="dropdown-item" href="{% url 'login' %}">Login</a>
+                                              <a class="dropdown-item" href="{% url 'signup' %}">Signup</a>
+                                          </div>
+                                      </li>
+                                      {% endif %}
+                                      
+                                      <li class="nav-item" style="margin-top: 8px;">
+                                        <a href="{% url 'cart' %}">
+                                            <svg class="cart">
+                                                <use xlink:href="#cart"></use>
+                                            </svg>
+                                        </a>
+                                    </li>
+                                    
+                                  </ul>
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+              </div>
           </div>
-        </div>
       </nav>
-    </header>
+  </header>
+  
+             
+      
+    
+
+    
