@@ -50,10 +50,11 @@
                     </div>
                 {% endfor %}
     
+                <!-- Pagination controls for category_one_products -->
                 <div class="pagination">
                     <span class="step-links">
                         {% if category_one_products.has_previous %}
-                           
+                            <a href="?page_one=1">&laquo; first</a>
                             <a href="?page_one={{ category_one_products.previous_page_number }}">previous</a>
                         {% endif %}
     
@@ -63,13 +64,14 @@
     
                         {% if category_one_products.has_next %}
                             <a href="?page_one={{ category_one_products.next_page_number }}">next</a>
-                           
+                            <a href="?page_one={{ category_one_products.paginator.num_pages }}">last &raquo;</a>
                         {% endif %}
                     </span>
                 </div>
             </div>
         </div>
     
+        <!-- Repeat the same structure for the second category -->
         <div class="category-container">
             <h1 class="my-4">Smart Watches</h1>
     
@@ -88,27 +90,28 @@
                     </div>
                 {% endfor %}
     
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if category_two_products.has_previous %}
-                            
-                            <a href="?page_two={{ category_two_products.previous_page_number }}">previous</a>
-                        {% endif %}
-    
-                        <span class="current">
-                            Page {{ category_two_products.number }} of {{ category_two_products.paginator.num_pages }}.
-                        </span>
-    
-                        {% if category_two_products.has_next %}
-                            <a href="?page_two={{ category_two_products.next_page_number }}">next</a>
-                           
-                        {% endif %}
+                 <!-- Pagination controls for category_two_products -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if category_two_products.has_previous %}
+                        <a href="?page_two=1">&laquo; first</a>
+                        <a href="?page_two={{ category_two_products.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ category_two_products.number }} of {{ category_two_products.paginator.num_pages }}.
                     </span>
-                </div>
+
+                    {% if category_two_products.has_next %}
+                        <a href="?page_two={{ category_two_products.next_page_number }}">next</a>
+                        <a href="?page_two={{ category_two_products.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
             </div>
         </div>
     </div>
-    
+</div>
+
 {% include "footer.html" %}
 
 <!-- Add Bootstrap JS and jQuery -->

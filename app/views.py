@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, ListView, CreateView
+from django.views.generic import TemplateView, ListView, CreateView,DetailView
 from django.views import View
 from .tokens import AccountActivationTokenGenerator, account_activation_token
 from .models import Product,BlogPost
@@ -36,6 +36,7 @@ from .tokens import account_activation_token
 from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
 from .models import Product,  BlogPost,Testimonial, CartItem,Category,CartItem, Order, OrderItem
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 
@@ -63,21 +64,22 @@ class IndexView(TemplateView):
 
         return context
 
-    
-
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-class ShopView(TemplateView):
+class ShopView(ListView):
     template_name = 'shop.html'
-    products_per_page = 3  
+    context_object_name = 'category_one_products'
+    paginate_by = 3
+
+    def get_queryset(self):
+        category_one = Category.objects.get(id=1)
+        return Product.objects.filter(category=category_one)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+       
         category_one = Category.objects.get(id=1)
         category_one_products = Product.objects.filter(category=category_one)
-        paginator_one = Paginator(category_one_products, self.products_per_page)
+        paginator_one = Paginator(category_one_products, self.paginate_by)
         page_one = self.request.GET.get('page_one')
 
         try:
@@ -89,9 +91,10 @@ class ShopView(TemplateView):
 
         context['category_one_products'] = category_one_products
 
+       
         category_two = Category.objects.get(id=2)
         category_two_products = Product.objects.filter(category=category_two)
-        paginator_two = Paginator(category_two_products, self.products_per_page)
+        paginator_two = Paginator(category_two_products, self.paginate_by)
         page_two = self.request.GET.get('page_two')
 
         try:
@@ -104,8 +107,6 @@ class ShopView(TemplateView):
         context['category_two_products'] = category_two_products
 
         return context
-
-
 class CartView(TemplateView):
     template_name = 'cart.html'
 
@@ -118,6 +119,78 @@ class CartView(TemplateView):
 
         context['cart_items'] = cart_items
         return context
+class CheckoutView(LoginRequiredMixin, TemplateView):
+    template_name = 'checkout.html'
+    login_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        cart_items = CartItem.objects.all()
+
+        total_quantity = sum(item.quantity for item in cart_items)
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+
+        product_names = [item.product.name for item in cart_items]
+
+        context = super().get_context_data(**kwargs)
+        context['cart_items'] = cart_items
+        context['total_quantity'] = total_quantity
+        context['total_price'] = total_price
+        context['product_names'] = product_names
+
+        return context
+
+    def post(self, request, *args, **kwargs):     
+        try:
+            cart_items = CartItem.objects.all()
+
+            total_quantity = sum(item.quantity for item in cart_items)
+            total_price = sum(item.product.price * item.quantity for item in cart_items)
+
+            order = Order.objects.create(
+                user=request.user,
+                total_quantity=total_quantity,
+                total_price=total_price
+            )
+
+            
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                    total_price=cart_item.product.price * cart_item.quantity
+                )         
+            CartItem.objects.all().delete()
+
+            messages.success(request, 'Order placed successfully. Thank you for your purchase!')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
+        return redirect('thankyou')
+class ThankYouView(TemplateView):
+    template_name = 'thankyou.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        cart_items = CartItem.objects.all()  
+        total_price = sum(item.product.price * item.quantity for item in cart_items)  
+
+        context['cart_items'] = cart_items
+        context['total_price'] = total_price
+    
+        return context
+
+
+
+
+
+
+
+
+
+
+
 class AddToCartView(LoginRequiredMixin, View):
     template_name = 'add_to_cart.html'
     login_url = 'login' 
@@ -146,8 +219,7 @@ class AddToCartView(LoginRequiredMixin, View):
             return redirect('cart')
 
         return render(request, self.template_name, {'product': product, 'form': form})
-
-
+    
 class RemoveFromCartView(View):
     def get(self, request, cart_item_id):
         cart_item = get_object_or_404(CartItem, pk=cart_item_id)
@@ -159,74 +231,6 @@ class RemoveFromCartView(View):
             cart_item.delete()
 
         return redirect('cart')
-
-
-
-class CheckoutView(LoginRequiredMixin, TemplateView):
-    template_name = 'checkout.html'
-    login_url = reverse_lazy('login')
-
-    def get_context_data(self, **kwargs):
-        cart_items = CartItem.objects.all()
-
-        total_quantity = sum(item.quantity for item in cart_items)
-        total_price = sum(item.product.price * item.quantity for item in cart_items)
-
-        product_names = [item.product.name for item in cart_items]
-
-        context = super().get_context_data(**kwargs)
-        context['cart_items'] = cart_items
-        context['total_quantity'] = total_quantity
-        context['total_price'] = total_price
-        context['product_names'] = product_names
-
-        return context
-
-    def post(self, request, *args, **kwargs):
-       
-
-        try:
-            cart_items = CartItem.objects.all()
-
-            total_quantity = sum(item.quantity for item in cart_items)
-            total_price = sum(item.product.price * item.quantity for item in cart_items)
-
-            order = Order.objects.create(
-                user=request.user,
-                total_quantity=total_quantity,
-                total_price=total_price
-            )
-
-            
-            for cart_item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=cart_item.product,
-                    quantity=cart_item.quantity,
-                    total_price=cart_item.product.price * cart_item.quantity
-                )
-
-           
-            CartItem.objects.all().delete()
-
-            messages.success(request, 'Order placed successfully. Thank you for your purchase!')
-        except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
-
-        return redirect('thankyou')
-class ThankYouView(TemplateView):
-    template_name = 'thankyou.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        cart_items = CartItem.objects.all()  
-        total_price = sum(item.product.price * item.quantity for item in cart_items)  
-
-        context['cart_items'] = cart_items
-        context['total_price'] = total_price
-    
-        return context
 
 class SignupView(CreateView):
     template_name = 'registration/signup.html'
@@ -307,32 +311,38 @@ class ActivateAccountView(View):
             return HttpResponse('Activation link is invalid or has expired.')    
         
 
-class ContactView(TemplateView):
+class ContactView(FormView):
     template_name = 'contact.html'
+    form_class = ContactForm
+    success_url = 'contact_success'  # Adjust this to the actual success URL
 
-    def get(self, request, *args, **kwargs):
-        form = ContactForm()
-        return self.render_to_response({'form': form})
+    def form_valid(self, form):
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        email = form.cleaned_data['email']
+        message = form.cleaned_data['message']
 
-    def post(self, request, *args, **kwargs):
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            email = form.cleaned_data['email']
-            message = form.cleaned_data['message']
+        subject = 'Contact Form Submission'
+        message_body = f'First Name: {first_name}\nLast Name: {last_name}\nEmail: {email}\nMessage: {message}'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = ['noufalmhd112@gmail.com'] 
+        send_mail(subject, message_body, from_email, to_email, fail_silently=False)
 
-           
-            subject = 'Contact Form Submission'
-            message_body = f'First Name: {first_name}\nLast Name: {last_name}\nEmail: {email}\nMessage: {message}'
-            from_email = settings.DEFAULT_FROM_EMAIL
-            to_email = ['noufalmhd112@gmail.com'] 
-            send_mail(subject, message_body, from_email, to_email, fail_silently=False)
+        return super().form_valid(form)
 
-            return render(request, 'contact_success.html') 
-        return self.render_to_response({'form': form})        
+    def form_invalid(self, form):
+        # Handle the case when the form is invalid
+        return self.render_to_response(self.get_context_data(form=form))     
     
+
+class ContactSuccessView(TemplateView):
+    template_name = 'contact_success.html'
+    success_message = "Your contact form was submitted successfully!"  # Optional success message
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['success_message'] = self.success_message
+        return context
 class BlogView(ListView):
     template_name = 'blog.html' 
     context_object_name = 'latest_posts'

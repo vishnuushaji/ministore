@@ -14,7 +14,7 @@ from .views import (
     PasswordResetDoneView,
     PasswordResetConfirmView,
     PasswordResetCompleteView,
-    ActivateAccountView,ContactView,BlogView,ThankYouView
+    ActivateAccountView,ContactView,BlogView,ThankYouView,ContactSuccessView
 )
 
 urlpatterns = [
@@ -30,6 +30,7 @@ urlpatterns = [
 
     
     path('contact/', ContactView.as_view(), name='contact'),
+    path('contact/contact_success/', ContactSuccessView.as_view(), name='contact_success'),
     path('blog/', BlogView.as_view(), name='blog'), 
 
     
