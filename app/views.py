@@ -107,17 +107,19 @@ class ShopView(ListView):
         context['category_two_products'] = category_two_products
 
         return context
-class CartView(TemplateView):
+class CartView(ListView):
     template_name = 'cart.html'
+    model = CartItem
+    context_object_name = 'cart_items'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for item in queryset:
+            item.total_price = item.product.price * item.quantity
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        cart_items = CartItem.objects.all()
-
-        for item in cart_items:
-            item.total_price = item.product.price * item.quantity
-
-        context['cart_items'] = cart_items
         return context
 class CheckoutView(LoginRequiredMixin, TemplateView):
     template_name = 'checkout.html'
