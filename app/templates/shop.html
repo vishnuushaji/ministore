@@ -53,7 +53,7 @@
                 <div class="pagination">
                     <span class="step-links">
                         {% if category_one_products.has_previous %}
-                            <a href="?page_one=1">&laquo; first</a>
+                           
                             <a href="?page_one={{ category_one_products.previous_page_number }}">previous</a>
                         {% endif %}
     
@@ -63,7 +63,7 @@
     
                         {% if category_one_products.has_next %}
                             <a href="?page_one={{ category_one_products.next_page_number }}">next</a>
-                            <a href="?page_one={{ category_one_products.paginator.num_pages }}">last &raquo;</a>
+                           
                         {% endif %}
                     </span>
                 </div>
@@ -91,7 +91,7 @@
                 <div class="pagination">
                     <span class="step-links">
                         {% if category_two_products.has_previous %}
-                            <a href="?page_two=1">&laquo; first</a>
+                            
                             <a href="?page_two={{ category_two_products.previous_page_number }}">previous</a>
                         {% endif %}
     
@@ -101,7 +101,7 @@
     
                         {% if category_two_products.has_next %}
                             <a href="?page_two={{ category_two_products.next_page_number }}">next</a>
-                            <a href="?page_two={{ category_two_products.paginator.num_pages }}">last &raquo;</a>
+                           
                         {% endif %}
                     </span>
                 </div>

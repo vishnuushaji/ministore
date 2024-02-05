@@ -30,7 +30,27 @@
                     <h2 class="text-center mb-4">Sign Up</h2>
                     <form method="post" id="signupForm">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            {{ form.username }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Password</label>
+                            {{ form.password1 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">Confirm Password</label>
+                            {{ form.password2 }}
+                        </div>
+
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Sign Up</button>
                     </form>
                     <p class="mt-3 text-center">
@@ -42,69 +62,69 @@
     </div>
 </div>
 
-
-
-{% endblock %}
-
-{% include 'footer.html' %}
-
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js"></script>
 
-
-<!-- jQuery Validation Script -->
 <script>
-    $(document).ready(function () {
-        $("#signupForm").validate({
-            rules: {
-                username: {
-                    required: true,
-                    minlength: 3,
-                },
-                email: {
-                    required: true,
-                    email: true,
-                },
-                password1: {
-                    required: true,
-                    minlength: 8,
-                },
-                password2: {
-                    required: true,
-                    equalTo: "#id_password1",
-                },
-            },
-            messages: {
-                username: {
-                    required: "Please enter your username",
-                    minlength: "Username must be at least 3 characters long",
-                },
-                email: {
-                    required: "Please enter your email",
-                    email: "Please enter a valid email address",
-                },
-                password1: {
-                    required: "Please enter a password",
-                    minlength: "Password must be at least 8 characters long",
-                },
-                password2: {
-                    required: "Please confirm your password",
-                    equalTo: "Passwords do not match",
-                },
-            },
-            errorElement: "div",
-            errorPlacement: function (error, element) {
-                error.addClass("invalid-feedback");
-                element.closest(".mb-3").append(error);
-            },
-            highlight: function (element, errorClass, validClass) {
-                $(element).addClass("is-invalid").removeClass("is-valid");
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).removeClass("is-invalid").addClass("is-valid");
-            },
-        });
+  $(document).ready(function () {
+    $("#signupForm").validate({
+      rules: {
+        username: {
+          required: true,
+          minlength: 3,
+        },
+        email: {
+          required: true,
+          email: true,
+        },
+        password1: {
+          required: true,
+          minlength: 6,
+        },
+        password2: {
+          required: true,
+          equalTo: "#id_password1",
+          minlength: 6,
+        },
+      },
+      messages: {
+        username: {
+          required: "Please enter a username",
+          minlength: "Username should be at least 3 characters",
+        },
+        email: {
+          required: "Please enter your email address",
+          email: "Please enter a valid email address",
+        },
+        password1: {
+          required: "Please enter a password",
+          minlength: "Password should be at least 6 characters",
+        },
+        password2: {
+          required: "Please confirm your password",
+          equalTo: "Passwords do not match",
+          minlength: "Password should be at least 6 characters",
+        },
+      },
+      errorElement: "div",
+      errorPlacement: function (error, element) {
+        error.addClass("invalid-feedback");
+        element.closest(".mb-3").append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-invalid").removeClass("is-valid");
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-valid").removeClass("is-invalid");
+      },
     });
+  });
 </script>
+
+{% endblock %}
+
+
+
+
+
