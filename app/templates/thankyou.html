@@ -10,9 +10,16 @@
     <h1>Thank You!</h1>
     <p>Your order has been confirmed.</p>
     
-    <h2>Order Details:</h2>
+    <button onclick="window.location.href='{% url 'shop' %}'">Continue Shopping</button>
+
+  </div>
+{% endblock %}
+
+{% include "footer.html" %}
+
+    <!-- <h2>Order Details:</h2>
     {% if cart_items %}
-      <!-- Display cart items in a table -->
+     
       <table class="table">
         <thead>
           <tr>
@@ -32,16 +39,25 @@
         </tbody>
       </table>
 
-      <!-- Display total price for all products -->
+     
       <p class="total-price" style="font-weight: bold; color: green;">Total Price: ${{ total_price }}</p>
     {% else %}
       <p>No items in the order.</p>
-    {% endif %}
+    {% endif %} 
+  
+     class ThankYouView(TemplateView):
+    template_name = 'thankyou.html'
 
-    <!-- Add additional content or order details as needed -->
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    <a href="{% url 'shop' %}">Continue Shopping</a>
-  </div>
-{% endblock %}
+        cart_items = CartItem.objects.all()  
+        total_price = sum(item.product.price * item.quantity for item in cart_items)  
 
-{% include "footer.html" %}
+        context['cart_items'] = cart_items
+        context['total_price'] = total_price
+    
+        return context
+-->
+
+   

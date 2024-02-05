@@ -41,25 +41,25 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 
-class IndexView(TemplateView):
+class IndexView(ListView):
     template_name = 'index.html'
+    context_object_name = 'latest_posts'
+    model = BlogPost
+    paginate_by = 3
+
+    def get_queryset(self):
+        return BlogPost.objects.order_by('-date_published')[:3]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        latest_posts = BlogPost.objects.order_by('-date_published')[:3]
-        context['latest_posts'] = latest_posts
-
         testimonials = Testimonial.objects.all()[:2]
         context['testimonials'] = testimonials
 
-        
-        category_one = Category.objects.get(id=1)
-        category_one_products = Product.objects.filter(category=category_one)[:3]
+        category_one_products = Product.objects.filter(category__id=1)[:3]
         context['category_one_products'] = category_one_products
 
-        category_two = Category.objects.get(id=2)
-        category_two_products = Product.objects.filter(category=category_two)[:3]
+        category_two_products = Product.objects.filter(category__id=2)[:3]
         context['category_two_products'] = category_two_products
 
         return context
@@ -169,20 +169,19 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
             messages.error(request, f'An error occurred: {str(e)}')
 
         return redirect('thankyou')
-class ThankYouView(TemplateView):
+class ThankYouView(DetailView):
     template_name = 'thankyou.html'
+    model = Order
+    context_object_name = 'order'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_object(self, queryset=None):
+        # Assuming you have a method to get the last order
+        return self.get_last_order()
 
-        cart_items = CartItem.objects.all()  
-        total_price = sum(item.product.price * item.quantity for item in cart_items)  
-
-        context['cart_items'] = cart_items
-        context['total_price'] = total_price
-    
-        return context
-
+    def get_last_order(self):
+        # Implement logic to get the last order, e.g., based on user and date
+        # Replace the following line with your actual logic
+        return Order.objects.last()
 
 
 
