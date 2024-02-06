@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from .models import CartItem
+
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -36,5 +38,10 @@ class RemoveFromCartForm(forms.Form):
 
 from django import forms
 
-class AddToCartForm(forms.Form):
-    quantity = forms.IntegerField(min_value=1, initial=1, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+class AddToCartForm(forms.ModelForm):
+    class Meta:
+        model = CartItem
+        fields = ['quantity']
+        widgets = {
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'initial': 1})
+        }

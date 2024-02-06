@@ -116,35 +116,39 @@ class CartView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         return context
 
-class AddToCartView(LoginRequiredMixin, View):
+class AddToCartView(LoginRequiredMixin, CreateView):
+    model = CartItem
+    form_class = AddToCartForm
     template_name = 'add_to_cart.html'
-    login_url = 'login' 
+    success_url = reverse_lazy('cart')
+    login_url = 'login'
 
-    def get(self, request, product_id):
+    def form_valid(self, form):
+        product_id = self.kwargs.get('product_id')
         product = get_object_or_404(Product, pk=product_id)
-        form = AddToCartForm()
-        return render(request, self.template_name, {'product': product, 'form': form})
+        quantity = form.cleaned_data['quantity']
 
-    def post(self, request, product_id):
-        product = get_object_or_404(Product, pk=product_id)
-        form = AddToCartForm(request.POST)
-
-        if form.is_valid():
-            quantity = form.cleaned_data['quantity']
-
-            cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
-            
-            if not created:
-                cart_item.quantity += quantity
-                cart_item.save()
-            else:
-                cart_item.quantity = quantity
-                cart_item.save()
-
-            return redirect('cart')
-
-        return render(request, self.template_name, {'product': product, 'form': form})
         
+        cart_item, created = CartItem.objects.get_or_create(user=self.request.user, product=product)
+
+       
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+            messages.success(self.request, f"{product.name} quantity updated in your cart.")
+        else:
+            cart_item.quantity = quantity
+            cart_item.save()
+            messages.success(self.request, f"{product.name} added to your cart.")
+
+        return redirect(self.success_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product_id = self.kwargs.get('product_id')
+        product = get_object_or_404(Product, pk=product_id)
+        context['product'] = product
+        return context
 class CheckoutView(LoginRequiredMixin, TemplateView):
     template_name = 'checkout.html'
     login_url = reverse_lazy('login')
