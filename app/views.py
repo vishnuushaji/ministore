@@ -223,7 +223,15 @@ class ThankYouView(LoginRequiredMixin, DetailView):
 class RemoveFromCartView(View):
     def post(self, request, cart_item_id):
         cart_item = get_object_or_404(CartItem, pk=cart_item_id)
-        cart_item.delete()
+
+        # Check if the cart item has more than 1 quantity
+        if cart_item.quantity > 1:
+            # Reduce the quantity by 1
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            # If only 1 quantity, remove the cart item from the cart
+            cart_item.delete()
 
         return redirect('cart')
 
@@ -304,7 +312,7 @@ class ActivateAccountView(View):
 class ContactView(FormView):
     template_name = 'contact.html'
     form_class = ContactForm
-    success_url = 'contact_success' 
+    success_url = 'contact-success' 
 
     def form_valid(self, form):
         first_name = form.cleaned_data['first_name']
