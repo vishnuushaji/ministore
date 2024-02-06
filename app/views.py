@@ -5,7 +5,6 @@ from .tokens import AccountActivationTokenGenerator, account_activation_token
 from .models import Product,BlogPost
 from django.views.generic.edit import FormView
 from .forms import AddToCartForm, RemoveFromCartForm, UserRegistrationForm, CustomAuthenticationForm
-from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView,LogoutView, PasswordChangeView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -15,10 +14,9 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator,PasswordResetTokenGenerator
 from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,JsonResponse, HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, CreateView, View
-from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.db import transaction
@@ -101,13 +99,15 @@ class ShopView(ListView):
         context['category_two_products'] = category_two_products
 
         return context
-class CartView(ListView):
+class CartView(LoginRequiredMixin, ListView):
     template_name = 'cart.html'
     model = CartItem
     context_object_name = 'cart_items'
+    login_url = reverse_lazy('login')
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
+    def get_queryset(self):      
+        queryset = CartItem.objects.filter(user=self.request.user)
+     
         for item in queryset:
             item.total_price = item.product.price * item.quantity
         return queryset
@@ -150,13 +150,17 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
 
     def get_context_data(self, **kwargs):
-        cart_items = CartItem.objects.all()
+        # Retrieve cart items specific to the current user
+        cart_items = CartItem.objects.filter(user=self.request.user)
 
+        # Calculate total quantity and total price of cart items
         total_quantity = sum(item.quantity for item in cart_items)
         total_price = sum(item.product.price * item.quantity for item in cart_items)
 
+        # Gather a list of product names from cart items
         product_names = [item.product.name for item in cart_items]
 
+        # Pass cart items, total quantity, total price, and product names to the template
         context = super().get_context_data(**kwargs)
         context['cart_items'] = cart_items
         context['total_quantity'] = total_quantity
@@ -167,18 +171,21 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):     
         try:
-            cart_items = CartItem.objects.all()
+            # Retrieve cart items specific to the current user
+            cart_items = CartItem.objects.filter(user=request.user)
 
+            # Calculate total quantity and total price of cart items
             total_quantity = sum(item.quantity for item in cart_items)
             total_price = sum(item.product.price * item.quantity for item in cart_items)
 
+            # Create a new order for the current user
             order = Order.objects.create(
                 user=request.user,
                 total_quantity=total_quantity,
                 total_price=total_price
             )
 
-            
+            # Create order items for each cart item
             for cart_item in cart_items:
                 OrderItem.objects.create(
                     order=order,
@@ -186,36 +193,33 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
                     quantity=cart_item.quantity,
                     total_price=cart_item.product.price * cart_item.quantity
                 )         
-            CartItem.objects.all().delete()
+
+            # Delete all cart items for the current user after the order has been successfully placed
+            cart_items.delete()
 
             messages.success(request, 'Order placed successfully. Thank you for your purchase!')
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
 
         return redirect('thankyou')
-class ThankYouView(DetailView):
+class ThankYouView(LoginRequiredMixin, DetailView):
     template_name = 'thankyou.html'
     model = Order
     context_object_name = 'order'
 
     def get_object(self, queryset=None):
-       
+        # Filter orders to only include those belonging to the current user
         return self.get_last_order()
 
     def get_last_order(self):
-        
-        return Order.objects.last()
+        # Retrieve the last order associated with the current user
+        return Order.objects.filter(user=self.request.user).last()
 
 
 class RemoveFromCartView(View):
-    def get(self, request, cart_item_id):
+    def post(self, request, cart_item_id):
         cart_item = get_object_or_404(CartItem, pk=cart_item_id)
-
-        if cart_item.quantity > 1:
-            cart_item.quantity -= 1
-            cart_item.save()
-        else:
-            cart_item.delete()
+        cart_item.delete()
 
         return redirect('cart')
 

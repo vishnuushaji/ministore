@@ -1,21 +1,30 @@
-<!-- templates/store/thankyou.html -->
-
 {% load static %}
 {% include "header.html" %}
 
 {% block title %}Thank You{% endblock %}
 
 {% block content %}
-  <div style="padding-top: 300px; padding-bottom: 300px;"> <!-- Adjust the padding as needed -->
+  <div style="padding-top: 50px; padding-bottom: 50px;">
     <h1>Thank You!</h1>
     <p>Your order has been confirmed.</p>
     
+    <h2>Your Last Order Details:</h2>
+    
+    {% if order %}
+        <p>Order ID: {{ order.id }}</p>
+        <p>Total Quantity: {{ order.total_quantity }}</p>
+        <p>Total Price: ${{ order.total_price }}</p>
+        <!-- Add more order details here as needed -->
+    {% else %}
+        <p>No orders found.</p>
+    {% endif %}
+    
     <button onclick="window.location.href='{% url 'shop' %}'">Continue Shopping</button>
-
   </div>
 {% endblock %}
 
 {% include "footer.html" %}
+
 
     <!-- <h2>Order Details:</h2>
     {% if cart_items %}
