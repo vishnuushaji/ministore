@@ -13,7 +13,7 @@ from .views import (
     PasswordResetView,
     PasswordResetDoneView,
     PasswordResetConfirmView,
-    PasswordResetCompleteView,
+    PasswordResetCompleteView,RedirectToIndexView,
     ActivateAccountView,ContactView,BlogView,ThankYouView,ContactSuccessView
 )
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('remove_from_cart/<int:cart_item_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('thankyou/', ThankYouView.as_view(), name='thankyou'),
+    path('redirect-to-index/', RedirectToIndexView.as_view(), name='redirect_to_index'),
 
 
     

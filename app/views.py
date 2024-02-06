@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, ListView, CreateView,DetailView
+from django.views.generic import TemplateView, ListView, CreateView,DetailView,DeleteView,RedirectView
 from django.views import View
 from .tokens import AccountActivationTokenGenerator, account_activation_token
 from .models import Product,BlogPost
@@ -37,6 +37,7 @@ from .forms import UserRegistrationForm, CustomAuthenticationForm, ContactForm
 from .models import Product,  BlogPost,Testimonial, CartItem,Category,CartItem, Order, OrderItem
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth import login as auth_login  
 
 
 
@@ -121,6 +122,36 @@ class CartView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+class AddToCartView(LoginRequiredMixin, View):
+    template_name = 'add_to_cart.html'
+    login_url = 'login' 
+
+    def get(self, request, product_id):
+        product = get_object_or_404(Product, pk=product_id)
+        form = AddToCartForm()
+        return render(request, self.template_name, {'product': product, 'form': form})
+
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, pk=product_id)
+        form = AddToCartForm(request.POST)
+
+        if form.is_valid():
+            quantity = form.cleaned_data['quantity']
+
+            cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+            
+            if not created:
+                cart_item.quantity += quantity
+                cart_item.save()
+            else:
+                cart_item.quantity = quantity
+                cart_item.save()
+
+            return redirect('cart')
+
+        return render(request, self.template_name, {'product': product, 'form': form})
+        
 class CheckoutView(LoginRequiredMixin, TemplateView):
     template_name = 'checkout.html'
     login_url = reverse_lazy('login')
@@ -184,43 +215,6 @@ class ThankYouView(DetailView):
         return Order.objects.last()
 
 
-
-
-
-
-
-
-
-
-class AddToCartView(LoginRequiredMixin, View):
-    template_name = 'add_to_cart.html'
-    login_url = 'login' 
-
-    def get(self, request, product_id):
-        product = get_object_or_404(Product, pk=product_id)
-        form = AddToCartForm()
-        return render(request, self.template_name, {'product': product, 'form': form})
-
-    def post(self, request, product_id):
-        product = get_object_or_404(Product, pk=product_id)
-        form = AddToCartForm(request.POST)
-
-        if form.is_valid():
-            quantity = form.cleaned_data['quantity']
-
-            cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
-            
-            if not created:
-                cart_item.quantity += quantity
-                cart_item.save()
-            else:
-                cart_item.quantity = quantity
-                cart_item.save()
-
-            return redirect('cart')
-
-        return render(request, self.template_name, {'product': product, 'form': form})
-    
 class RemoveFromCartView(View):
     def get(self, request, cart_item_id):
         cart_item = get_object_or_404(CartItem, pk=cart_item_id)
@@ -255,13 +249,15 @@ class SignupView(CreateView):
         user.email_user(subject, message)
 
 
+
 class LoginView(AuthLoginView):
     template_name = 'registration/login.html'
     form_class = CustomAuthenticationForm
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        return redirect(reverse_lazy('index'))
+        """Security check complete. Log the user in."""
+        auth_login(self.request, form.get_user())
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class LogoutView(AuthLogoutView):
@@ -350,3 +346,11 @@ class BlogView(ListView):
     model = BlogPost
     ordering = ['-date_published']  
     paginate_by = 3    
+
+class RedirectToIndexView(RedirectView):
+  
+    url = reverse_lazy('index')   
+    permanent = False    
+    def get_redirect_url(self, *args, **kwargs):
+       
+        return super().get_redirect_url(*args, **kwargs)    

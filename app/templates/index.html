@@ -204,7 +204,11 @@
          <div class="row">
             <div class="display-header d-flex justify-content-between pb-3">
                <h2 class="display-7 text-dark text-uppercase">Latest Posts</h2>
+               
                <div class="btn-right">
+                
+                <a href="{% url 'redirect_to_index' %}" class="btn btn-medium btn-normal text-uppercase">Blog</a>
+              
                </div>
             </div>
             <div class="post-grid d-flex flex-wrap justify-content-between">
@@ -266,7 +270,7 @@
                           {% endfor %}
                       </div>
                   </div>
-                  <!-- ... Other existing code ... -->
+                 
               </div>
           </div>
       </div>
@@ -275,3 +279,29 @@
   
     
     {% include "footer.html" %}
+
+
+
+
+     <!-- class IndexView(TemplateView):
+    template_name = 'index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        latest_posts = BlogPost.objects.order_by('-date_published')[:3]
+        context['latest_posts'] = latest_posts
+
+        testimonials = Testimonial.objects.all()[:2]
+        context['testimonials'] = testimonials
+
+        
+        category_one = Category.objects.get(id=1)
+        category_one_products = Product.objects.filter(category=category_one)[:3]
+        context['category_one_products'] = category_one_products
+
+        category_two = Category.objects.get(id=2)
+        category_two_products = Product.objects.filter(category=category_two)[:3]
+        context['category_two_products'] = category_two_products
+
+        return context -->
