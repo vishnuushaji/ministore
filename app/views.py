@@ -6,15 +6,8 @@ from .models import Product,BlogPost
 from django.views.generic.edit import FormView
 from .forms import AddToCartForm, RemoveFromCartForm, UserRegistrationForm, CustomAuthenticationForm
 from django.urls import reverse_lazy
-from django.contrib.auth.views import (
-    LoginView as AuthLoginView,
-    LogoutView as AuthLogoutView,
-    PasswordChangeView as AuthPasswordChangeView,
-    PasswordResetView as AuthPasswordResetView,
-    PasswordResetDoneView as AuthPasswordResetDoneView,
-    PasswordResetConfirmView as AuthPasswordResetConfirmView,
-    PasswordResetCompleteView as AuthPasswordResetCompleteView,
-)
+from django.contrib.auth.views import LoginView,LogoutView, PasswordChangeView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
@@ -206,12 +199,11 @@ class ThankYouView(DetailView):
     context_object_name = 'order'
 
     def get_object(self, queryset=None):
-        # Assuming you have a method to get the last order
+       
         return self.get_last_order()
 
     def get_last_order(self):
-        # Implement logic to get the last order, e.g., based on user and date
-        # Replace the following line with your actual logic
+        
         return Order.objects.last()
 
 
@@ -250,41 +242,34 @@ class SignupView(CreateView):
 
 
 
-class LoginView(AuthLoginView):
+
+class LoginView(LoginView):
     template_name = 'registration/login.html'
     form_class = CustomAuthenticationForm
-
-    def form_valid(self, form):
-        """Security check complete. Log the user in."""
-        auth_login(self.request, form.get_user())
-        return HttpResponseRedirect(self.get_success_url())
+    success_url = '/' 
 
 
-class LogoutView(AuthLogoutView):
-    next_page = '/'
 
+class LogoutView(LogoutView):
+    next_page = '/' 
 
-class PasswordChangeView(AuthPasswordChangeView):
+class PasswordChangeView(PasswordChangeView):
     template_name = 'registration/password_change.html'
     success_url = reverse_lazy('password_change_done')
 
-
-class PasswordResetView(AuthPasswordResetView):
+class PasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset_form.html'
     email_template_name = 'registration/password_reset_email.html'
     success_url = reverse_lazy('password_reset_done')
 
-
-class PasswordResetDoneView(AuthPasswordResetDoneView):
+class PasswordResetDoneView(PasswordResetDoneView):
     template_name = 'registration/password_reset_done.html'
 
-
-class PasswordResetConfirmView(AuthPasswordResetConfirmView):
+class PasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'registration/password_reset_confirm.html'
     success_url = reverse_lazy('password_reset_complete')
 
-
-class PasswordResetCompleteView(AuthPasswordResetCompleteView):
+class PasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'registration/password_reset_complete.html'
 
 
@@ -294,7 +279,7 @@ class ActivateAccountView(View):
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = get_user_model().objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-            user = None
+            user = NoneFormView
 
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
@@ -311,7 +296,7 @@ class ActivateAccountView(View):
 class ContactView(FormView):
     template_name = 'contact.html'
     form_class = ContactForm
-    success_url = 'contact_success'  # Adjust this to the actual success URL
+    success_url = 'contact_success' 
 
     def form_valid(self, form):
         first_name = form.cleaned_data['first_name']
@@ -328,7 +313,7 @@ class ContactView(FormView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        # Handle the case when the form is invalid
+       
         return self.render_to_response(self.get_context_data(form=form))     
     
 
